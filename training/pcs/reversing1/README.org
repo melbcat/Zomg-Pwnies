@@ -1,0 +1,31 @@
+* Reversing1
+** Reading material
+*** Intel(R) 64 and IA-32 Architectures Software Developer's Manual
+    http://www.intel.com/products/processor/manuals/index.htm
+*** ELF
+    http://www.linuxjournal.com/article/1059
+*** More ELF
+    http://www.linuxforums.org/articles/understanding-elf-using-readelf-and-objdump_125.html
+*** Commented assembly
+    =read/commented-assembly.txt=
+*** Slides
+    =read/slides.ps=
+
+** Assignment
+
+   =assi/reverse1.tar=
+
+   Reverse engineer the binary file =reverse_ex0= to discover what the program's
+   functionallity is.
+
+   1) Hand in a commented assembly listing.
+   1) Answer the following questions:
+      - Which file format is it?
+      - Which password is required to make the program run?
+      - What does the program do with and without the password?
+
+      Hints:
+      - =objdump -x ./reverse_ex0=
+      - =objdump -M intel -d ./reverse_ex0=
+      - =readelf -x .data ./reverse_ex0=
+      - =readelf -x .rodata ./reverse_ex0=

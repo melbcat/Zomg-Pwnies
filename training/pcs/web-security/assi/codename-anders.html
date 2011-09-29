@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en" xml:lang="en">
+<head>
+<title>Codename Anders </title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2011-05-02 06:35:15 CEST"/>
+<meta name="author" content="Ken Friis Larsen"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+
+<h1 class="title">Codename Anders </h1>
+
+
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1">Background </h2>
+<div class="outline-text-2" id="text-1">
+
+
+<p>
+This assignment is about making a security assessment of a real open source
+project, and trying to remedy some security issues.
+</p>
+<p>
+An unnamed Faculty of SCIENCE is contemplating to replace a certain IT system
+used for teaching because there have been found numerous security issues in
+the current IT system.  The successor system goes under the codename
+<i>Anders</i>. An unnamed Vice Dean is championing an open source system called
+jurpopage as starting point for Anders.
+</p>
+<p>
+Your task is to make a security assessment of jurpopage and write up your
+findings.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2">What to Hand In </h2>
+<div class="outline-text-2" id="text-2">
+
+
+<p>
+You should hand-in two things:
+</p><ul>
+<li>
+A report (as a text file or PDF file) with findings.  
+
+<p>
+Your report should be no longer than four pages (excluding
+appendices and code examples) and should be composed for ease of
+grading.  That is, structure your report so that the first four
+pages makes it clear why you should pass the assignment, and
+include minor finding in appendices.
+</p>
+</li>
+<li>
+Source code you may have produced as part of your hand-in, in
+a zip archive.
+
+</li>
+</ul>
+
+<p>Appendix A contains instructions on how to set up an evaluation environment.
+</p>
+<p>
+Appendix B contains an example of how we would like you to structure your
+hand-in.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3">Task 1: Black Box Assessment </h2>
+<div class="outline-text-2" id="text-3">
+
+
+<p>
+Even though you have access to the source code of jurpopage, you
+should (try to) complete this part of the assignment as a <i>Black   Box</i> assessment.  That is, without looking at the source code for
+jurpopage.  And you should only access jurpopage through the web interface.
+</p>
+<p>
+You shall focus on Access Control and Cross-Site Scripting (XSS).
+If you have trouble getting started, you may start with the
+challenge to determine if it possible to gain assess as the special
+user <code>admin</code>.
+</p>
+<p>
+To get access as <code>admin</code> you might try:
+</p><ul>
+<li>
+Brute force
+</li>
+<li>
+Cookie theft
+
+</li>
+</ul>
+
+<p>Other things you might want to investigate:
+</p><ul>
+<li>
+Phishing with XSS
+</li>
+<li>
+Stored XSS Attacks
+</li>
+<li>
+Cross Site Request Forgery (CSRF)
+</li>
+<li>
+Reflected XSS Attacks
+</li>
+<li>
+HTTPOnly Test
+</li>
+<li>
+Cross Site Tracing (XST) Attacks
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4">Task 2: White Box Assessment </h2>
+<div class="outline-text-2" id="text-4">
+
+
+<p>
+In this task you are allowed (but not required) to look at the
+source code for jurpopage.  If you solve the task as a black box
+assessment, let us know and we'll give you extra credit.
+</p>
+<p>
+You shall focus on SQL Injection.  Your main tasks are to:
+</p><ul>
+<li>
+See if you can get a list over registered users and their
+information (in particular email and password).
+</li>
+<li>
+See if you can register a user and give that user the same rights
+as the <code>admin</code> user.
+</li>
+<li>
+See if you change the password for <code>admin</code>.
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5">Task 3: Fix It </h2>
+<div class="outline-text-2" id="text-5">
+
+
+<p>
+Select an XSS issue and an SQL injection issue you have found, and
+fix them.  That is, find (some of) the relevant places were HTML or
+SQL can be inputted by a user, and implement sanitizers for the input.
+</p>
+<p>
+Demonstrate that your have fixed the issues by writing tests that
+demonstrates that the issues have been fixed. Your tests should be
+more than just string comparisons of bad input to good output, as it
+should not depend on specific implementation of the sanitizers. You
+can assume that non-dangerous HTML is left alone and that dangerous
+HTML is removed or replaced, but should not depend on the specific
+way that the transformation is performed.
+</p>
+
+</div>
+
+</div>
+
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6">Appendix A: Installing Evaluation Environment </h2>
+<div class="outline-text-2" id="text-6">
+
+
+<p>
+Rather than installing jurpo on you own machine, we (strongly) recommend that
+you install it in a virtual machine.  We have good experience with VMware
+(<a href="http://www.vmware.com/products/player/">VMware Player</a>) and <a href="http://www.virtualbox.org/">VirtualBox</a>. 
+</p>
+
+</div>
+
+<div id="outline-container-6.1" class="outline-3">
+<h3 id="sec-6.1">VirtualBox Notes </h3>
+<div class="outline-text-3" id="text-6.1">
+
+<ul>
+<li>
+VirtualBox reads VMware images.
+
+</li>
+<li>
+VirtualBox is available in most Linux repositories
+
+
+
+<pre class="example">sudo apt-get install virtualbox-ose
+</pre>
+
+
+
+
+<p>
+The current <code>virtualbox-4.0</code> package (at least) in Ubunt 10.10
+might have some issues on computers that doesn't have hardware
+virtualization when the guest OS is compiled with PAE, which the
+TurnKey LAMP image is. The <code>virtualbox-ose</code> package has been tested
+and works on Ubuntu 10.10
+</p>
+</li>
+<li>
+When the TurnKey LAMP image is imported, remember to enable
+PAE. This can be done in the settings dialogue of the imported
+image under System <code>-&gt;</code> Processor <code>-&gt;</code> check "Enable PAE/NX"
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-6.2" class="outline-3">
+<h3 id="sec-6.2">Turnkey Linux: LAMP </h3>
+<div class="outline-text-3" id="text-6.2">
+
+
+<p>
+As jurpo is based on PHP and MySQL, the <a href="http://www.turnkeylinux.org/lamp">TurnKey LAMP Stack Appliance</a> (<a href="http://www.turnkeylinux.org/download?file=turnkey-lamp-11.1-lucid-x86-vmdk.zip">VMware image</a>, <a href="http://www.turnkeylinux.org/download?file=turnkey-lamp-11.1-lucid-x86-ovf.zip">OVF image</a>) is an excellent starting point. Download it, boot it, set
+the root passwords, and update it.
+</p>
+<p>
+Now, to get your PHP installation jurpo-ready you should:
+</p>
+<ol>
+<li>
+Install GD support
+
+
+
+<pre class="example">root@lamp ~# apt-get install php5-gd
+</pre>
+
+
+
+
+</li>
+<li>
+Edit <code>/etc/php5/apache2/php.ini</code>, find <code>register_long_arrays</code> on line 701
+and change it to <code>On</code>
+
+
+
+<pre class="src src-conf"><span style="color: #a0522d;">register_long_arrays</span> = On
+</pre>
+
+
+
+
+</li>
+</ol>
+
+<p><b>IMPORTANT:</b> This is required for jurpopage to function properly.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-6.3" class="outline-3">
+<h3 id="sec-6.3">Installing Jurpo </h3>
+<div class="outline-text-3" id="text-6.3">
+
+
+<ol>
+<li>
+Get jurpo from <a href="http://diku.dk/~kflarsen/jurpopage.zip">http://diku.dk/~kflarsen/jurpopage.zip</a> and unzip it.
+
+
+
+
+<pre class="example">root@lamp ~# wget http://diku.dk/~kflarsen/jurpopage.zip
+root@lamp ~# unzip jurpopage.zip
+root@lamp ~# rm jurpopage.zip
+</pre>
+
+
+
+
+</li>
+<li>
+Create an MySQL database for jurpo
+
+
+
+<pre class="example">root@lamp ~# mysql -h localhost -u root -p
+mysql&gt; CREATE DATABASE jurpopage;
+mysql&gt; quit;
+</pre>
+
+
+
+
+</li>
+<li>
+Populate the jurpo database
+
+
+
+<pre class="example">root@lamp ~# mysql -h localhost -u root -p jurpopage
+mysql&gt; source jurpopage/jurpopage-datatest.sql
+mysql&gt; quit
+</pre>
+
+
+
+
+</li>
+<li>
+Edit the file <code>jurpopage/www/library/configuration.php</code> to
+make the following changes:
+
+
+
+<pre class="src src-php">$<span style="color: #a0522d;">website_url</span> = <span style="color: #8b2252;">"http://localhost/jurpo/"</span>; <span style="color: #b22222;">/* </span><span style="color: #b22222;">Your Website URL </span><span style="color: #b22222;">*/</span>
+$<span style="color: #a0522d;">db_passwd</span> = <span style="color: #8b2252;">"your mysql root password"</span>; <span style="color: #b22222;">/* </span><span style="color: #b22222;">change it to your database password </span><span style="color: #b22222;">*/</span>
+</pre>
+
+
+
+
+</li>
+<li>
+Get jurpo in place:
+
+
+
+<pre class="example">root@lamp ~# mv jurpopage/www /var/www/jurpo
+root@lamp ~# rm -rf jurpopage/
+root@lamp ~# cd /var/www/jurpo
+root@lamp ~# find . -type f -exec chmod 644 {} \;
+root@lamp ~# find . -type d -exec chmod 755 {} \;
+root@lamp ~# chmod 755 .
+</pre>
+
+
+
+
+</li>
+<li>
+Restart apache:
+
+
+
+<pre class="example">root@lamp ~# /etc/init.d/apache2 restart
+</pre>
+
+
+
+
+</li>
+<li>
+Enjoy jurpo at <code>http://&lt;virt.machine.ip.addr&gt;/jurpo</code>
+
+</li>
+</ol>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-7" class="outline-2">
+<h2 id="sec-7">Appendix B: Example Structure for hand-in </h2>
+<div class="outline-text-2" id="text-7">
+
+
+<p>
+Following is a model solution (unfortunately it is rather misguided) for how
+we would like you to structure your hand-in.
+</p>
+
+
+
+<pre class="src src-markdown"><span style="color: #0000ff; font-weight: bold;"># Problem: Unprotected Attributes</span>
+
+The attributes in the class <span style="color: #008b8b;">`pagination`</span> have been declared with the
+keyword <span style="color: #008b8b;">`var`</span> which implicitly gives public visibility in PHP.  This
+is a problem, as it allows unauthorised client code to modify the
+attributes (as I understand the documentation on php.net), which in
+turn can lead to security problems.
+
+<span style="color: #0000ff; font-weight: bold;"># Test/Example that demonstrate Unprotected Attributes Problem</span>
+
+Below is a client class that modify the variable <span style="color: #008b8b;">`$q`</span>:
+
+<span style="color: #008b8b;">```</span>
+<span style="color: #008b8b;">    class RockStar {</span>
+<span style="color: #008b8b;">      function roll() {</span>
+<span style="color: #008b8b;">        $p = new pagenation();</span>
+<span style="color: #008b8b;">        $p-&gt;q = "La, la, I can change all your variables";</span>
+<span style="color: #008b8b;">      }</span>
+<span style="color: #008b8b;">    }</span>
+<span style="color: #008b8b;">```</span>
+
+<span style="color: #0000ff; font-weight: bold;"># Fixing the Unprotected Attributes Problem</span>
+
+Replace <span style="color: #008b8b;">`var`</span> with <span style="color: #008b8b;">`public`</span>.
+</pre>
+
+
+
+
+</div>
+</div>
+<div id="postamble">
+</div>
+</div>
+</body>
+</html>

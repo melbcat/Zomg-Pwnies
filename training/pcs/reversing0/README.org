@@ -1,0 +1,27 @@
+* Reversing0
+** Reading material
+*** CTF
+    =read/ctf.pdf=
+*** Nops'r'us
+    http://nopsr.us/
+*** DDTek
+    http://www.ddtek.biz/
+*** Dalvin Opcodes
+    http://pallergabor.uw.hu/androidblog/dalvik_opcodes.html
+*** Android-apktool
+    http://code.google.com/p/android-apktool/
+*** Slides
+    =read/slides.pdf=
+
+** Assignment (was reverted due to possible copyright infringements)
+
+   =assi/alchemy.apk=
+
+   Find all the recipies in the Android game Alchemy.
+
+** Assignment
+
+   =crackme.tgx=
+
+   Ok new assignment. This is a good old crackme assignment. Your have to write
+   a keygen simple and easy.

@@ -1,0 +1,29 @@
+* Reconnaissance
+** Reading material
+*** How I met your girlfriend
+    http://www.youtube.com/watch?v=YDW7kobM6Ik
+*** HBGary
+    http://arstechnica.com/tech-policy/news/2011/02/anonymous-speaks-the-inside-story-of-the-hbgary-hack.ars/
+*** Fastflux
+    http://www.honeynet.org/papers/ff
+*** Metasploit
+    http://www.metasploit.com/
+*** DNS amplification attack
+    http://securitytnt.com/dns-amplification-attack/
+*** Pentesting
+    http://www.youtube.com/watch?v=4NdXzgKlioQ
+*** Reconnaissance
+    =read/recon.pdf=
+
+** Assignment
+   You won't be able to do this assignment because it depends on certain servers
+   that were hosted at DIKU at the time. Assignment text included for
+   completeness.
+
+   In this exercise you will pentest the network 192.168.56.*. You can access it
+   through pcs.diku.dk. You goal is to locate the hidden service. You will know
+   you have found the service when you get the answer "hidden service found...".
+
+   Write a short essay one page MAX where you account for your findings.
+
+   Props to parmus for making it happen

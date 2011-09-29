@@ -1,0 +1,27 @@
+* Web security
+
+** Reading material
+
+*** Web security readings
+**** OWASP Top 10 Application Security Risks - 2010
+     https://www.owasp.org/index.php/Top_10_2010-Main
+**** Weapons of Mass Assignment by Patrick McKenzie
+     https://www.owasp.org/index.php/Top_10_2010-Main
+     Communications of the ACM Vol. 54 No. 5, Pages 54-59
+**** Web Application Security Consortium's page on Cross-site scripting
+     http://projects.webappsec.org/w/page/13246920/Cross-Site-Scripting
+**** "HTML Code Injection and Cross-site Scripting", By Gunter Ollmann
+     http://www.technicalinfo.net/papers/CSS.html
+**** OWASP's SQL Injection Page
+     https://www.owasp.org/index.php/SQL_Injection
+**** OWASP's Blind SQL Injection Page
+     https://www.owasp.org/index.php/Blind_SQL_Injection
+**** OWASP's XSS Page
+     https://www.owasp.org/index.php/XSS
+**** "DOM Based Cross Site Scripting or XSS of the Third Kind" By Amit Klein (WASC article)
+     http://www.webappsec.org/projects/articles/071105.shtml
+*** Slides
+    =read/websecurity.pdf=
+
+** Assignment
+   =assi/codename-anders.html=

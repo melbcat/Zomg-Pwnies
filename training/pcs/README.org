@@ -2,16 +2,18 @@
   This folder contains all the material used on the course "Proactive Computer
   Security" as it was taught at DIKU in the spring of 2011.
 
-  The material is divided into eight folders, one for each week of the
+  The material is divided into nine folders, one for each week of the
   course. Each folder contains two subfulders called "read" which contains
   reading material and lecture slides and "assi" which contains the assignment
   for that week.
 
   The weeks in chronological order is:
-  - Pentest
-  - Web exploits
-  - Reversing
-  - Stack overflow
-  - Heap overflow
-  - Fuzzing
-  - Final notes
+  - Reconnaissance
+  - Reversing0
+  - Web security
+  - Reversing1
+  - Shellcode
+  - Stack
+  - Heap
+  - Fuzzing & static analysis
+  - Final
