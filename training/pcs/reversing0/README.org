@@ -21,7 +21,7 @@
 
 ** Assignment
 
-   =crackme.tgx=
+   =crackme.tgz=
 
    Ok new assignment. This is a good old crackme assignment. Your have to write
    a keygen simple and easy.
