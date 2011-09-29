@@ -1,0 +1,34 @@
+* Head
+** Reading material
+*** Doug Lee: A Memory Allocator
+    http://g.oswego.edu/dl/html/malloc.html
+*** JPEG COM Marker Processing Vulnerability in Netscape Browsers
+    http://www.openwall.com/advisories/OW-002-netscape-jpeg/
+*** Slides
+    =read/slides.pdf.bz2=
+
+** Assignment
+   =assi/heap.tar=
+
+   The program =heap_ex0= is vulnerable to an off-by-one heap buffer
+   overflow. Locate the vulnerability, and hand in the following:
+
+   1) A commented disassembly of the vulnerable function.
+   2) A drawing of the heap layout, at the time of the overflow. Include all
+      relevant heap blocks and their control structures. Use ASCII art, a
+      picture of a hand drawing on a napkin, PostScript, or similar.
+   3) An exploit that will give an attacker arbitrary code execution. The
+      exploit must be written in C. Feel free to use =exploit.c= as a
+      template. Use your shellcode from the previous exercise.
+
+   Hints:
+   - The file =malloc.c= contains the source code for the memory allocator used
+     in =heap_ex0=.
+   - If you place your shellcode in =shellcode.asm=, the rules in the Makefile
+     will assemble it, convert the output to a C array, and write it to
+     shellcode.h.
+   - If you compile your exploit to i386 code (=-m32= if you are on amd64), you
+     can run your exploit in gdb and stay attached when the vulnerable program
+     is executed.
+   - =gcc -m32 -o exploit exploit.c=
+   - =gdb ./exploit=

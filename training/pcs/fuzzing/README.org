@@ -1,0 +1,39 @@
+* Fuzzing & Static analysis
+** Reading material
+*** Sulley fuzzer
+    =read/SulleyManual.pdf=
+*** Peach
+    http://peachfuzzer.com/
+*** Finding Application Errors and Security Flaws Using PQL: a Program Query Language
+    =read/oopslag05pql.pdf=
+*** Automated Whitebox Fuzz Testing
+    =read/ndss2008.pdf=
+*** Static analysis slides
+    =read/stacic-analysis.pdf=
+*** Slides
+    =read/fuzzing.pdf=
+
+** Assignment
+   =assi/fuzz_stud.tar.gz=
+
+   The objective of this exercise is to fuzz the server app.
+
+   The service is really simple.
+
+   1) When you connect to the server it sends a banner and asks for your first
+      name.
+   2) Send the name.
+   3) The service asks for your last name.
+   4) Send the name.
+   5) Receive you own personal Star Wars name. That's it.
+
+   There are two ways of doing this exercise.
+   1) Write your own little fuzzer in C or Python.
+   2) Make use of the Sulley fuzzer framework.
+      If you choose to make use of the sulley framework you should.
+      - Set the =ulimit -c= to unlimited.
+      - Start the server from the sulley root dir.
+      - The Sulley is modified to look for core files in the Sulley home dir.
+
+   Solutions should include the code that you have written and a small proof of
+   concept that can verify your findings (a core dump).

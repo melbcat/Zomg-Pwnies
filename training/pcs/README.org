@@ -17,3 +17,19 @@
   - Heap
   - Fuzzing & static analysis
   - Final
+
+** Recomended reading
+*** Hacking: The Art of Exploitation (Book)
+    http://www.amazon.co.uk/Hacking-Art-Exploitation-Book-Package/dp/1593271441/
+*** The Shellcoders Handbook (Book)
+    http://www.amazon.co.uk/Shellcoders-Handbook-Discovering-Exploiting-Security/dp/047008023X/
+*** Hacking Exposed (Book)
+    http://www.amazon.co.uk/Hacking-Exposed-Sixth-Security-Solutions/dp/0071613749/
+*** Gray Hat Hacking (Book)
+    http://www.amazon.co.uk/Gray-Hacking-Ethical-Hackers-Handbook/dp/0071742557/
+*** Linkers and Loaders (Book)
+    http://www.amazon.co.uk/Linkers-Kaufmann-Software-Engineering-Programming/dp/1558604960/
+*** The C Programming Language (Book)
+    http://www.amazon.co.uk/C-Programming-Language-2nd/dp/0131103628/
+*** How To Become A Hacker
+    http://www.catb.org/~esr/faqs/hacker-howto.html
