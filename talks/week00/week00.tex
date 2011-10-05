@@ -1,0 +1,918 @@
+% xcolor=table is because it seems that beamer uses the xcolor package in a
+% strange way and thus don't accept us giving arguments to the package.
+\documentclass[slidestop,compress,mathserif, xcolor=table]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{multicol}
+
+% \usepackage{mdwtab}
+% \usepackage{mathenv}
+% \usepackage{amsfonts}
+% \usepackage{amsmath}
+% \usepackage{amssymb}
+% \usepackage{amsthm}
+
+\usepackage{semantic}
+\renewcommand{\ttdefault}{txtt} % Bedre typewriter font
+
+% Use the NAT theme in uk (also possible in DK)
+\usetheme[nat,uk, footstyle=low]{Frederiksberg}
+
+% Make overlay sweet nice by having different transparancy depending on how
+% "far" ahead the overlay is. AWSOME!!
+% \setbeamercovered{highly dynamic}
+% possible to shift back, so they are just invisible untill they should overlay
+% \setbeamercovered{invisible}
+
+% Extend figures into either left or right margin
+% Ex: \begin{narrow}{-1in}{0in} .. \end{narrow} will place 1in into left margin
+\newenvironment{narrow}[2]{%
+  \begin{list}{}{%
+  \setlength{\topsep}{0pt}%
+  \setlength{\leftmargin}{#1}%
+  \setlength{\rightmargin}{#2}%
+  \setlength{\listparindent}{\parindent}%
+  \setlength{\itemindent}{\parindent}%
+  \setlength{\parsep}{\parskip}}%
+\item[]}{\end{list}}
+
+
+
+\usepackage{tikz}
+\usetikzlibrary{calc,shapes,arrows}
+% below is for use of backgrounds (foregrounds are not used so they are not
+% added to this specification).
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+
+\usepackage{subfigure}
+
+
+% Write a short text to have that shown in the footer of slides other than the
+% title slide.
+\title[]{Zomg pwnies!}
+% A possible subslide.
+% \subtitle{Regular-expression based bit coding}
+
+
+\author[Morten Brøns-Pedersen]
+       {\includegraphics[scale=0.3]{zomg-pwnies}\\Morten Brøns-Pedersen}
+
+% Only write DIKU in the footer of slides (except the title slide).
+\institute[DIKU]{Department of Computer Science}
+
+% Remove the date stamp from the footer of slides (except title slide) by giving
+% it no short "text"
+\date[]{July 18, 2010}
+
+\begin{document}
+
+\frame[plain]{\titlepage}
+
+\begin{frame}
+  \frametitle{Overview}
+
+  Website: slamkode.dk\\[1em]
+
+  This is the stuff we'll go over today:
+  \begin{itemize}
+  \item Introduction.
+  \item Reversing.
+  \item Shellcode.
+  \item Stack buffer overflow.
+  \item Heap buffer ovorflow and Doug Lea's malloc-and-friends.
+  \item Writing exploits.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Introduction}
+
+  \begin{itemize}
+  \item \alert<1>{What is our goal?}
+  \item \alert<2>{What is Pwnies' teaching form?}
+  \item \alert<3>{Which prerequisites should you have?}
+  \item \alert<4>{What do we expect of you?}
+  \item \alert<5>{What will you learn?}
+  \end{itemize}
+
+  \only<1>{Send a team from DIKU to DEFCON CTF in 2011.}
+
+  \only<2>{We meet every Sunday as long as anyone is still motivated. A lecture
+    in the morning and workshop in the afternoon. The first four lectures are
+    already planned - after that \emph{you} will do the talking.}
+
+  \only<3>{None. We'll start with the basic stuff and work our way from
+    there. But you should have looked a chapters 0x100 and 0x200 in ``Hacking:
+    The Art of Exploitation'' and installed IDA Pro for today.
+
+    A lot of the ground we cover in Pwnies is similar to the curriculum of
+    Proactive Computer Security (block 4 in 2011).}
+
+  \only<4>{You should really try to be here every Sunday. Otherwise you will
+    have a hard time. In addition to the lectures and workshops there will be
+    some homework, both reading and exercises.}
+
+  \only<5>{Our main focus is binary exploitation. That means a \emph{lot} of
+    reversing. We really need people who can run HandRays as fast as a modern
+    computer can run HexRays.
+
+    But we cover other topics too. The first four weeks focus on
+    \begin{enumerate}
+    \item[Week 0] Binary exploitation (Morten).
+    \item[Week 1] Forensics (Irfan).
+    \item[Week 2] Crypto (Johan).
+    \item[Week 3] Advanced reversing with IDA Pro (Jesper).
+    \end{enumerate}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{Binary exploitation}
+
+  For most of the problems we'll look at today we're after code execution. In
+  general that involves three steps:
+  \begin{itemize}
+  \item \alert<1>{Get your (shell)code into memory.}
+  \item \alert<2>{Get control of execution.}
+  \item \alert<3>{Execute your (shell)code.}
+  \end{itemize}
+
+  \only<1>{Often this is not a big problem. For today the only requirement is
+    that your shellcode does not contain any NUL bytes.}
+
+  \only<2>{This is where you need to find a bug in the target program. A typical
+    example is to overflow a stack allocated buffer and overwrite the return
+    address. We'll look into this later.}
+
+  \only<3>{Most of the time you don't have a clue where in memory your shellcode
+    is located. So it can be tricky to get it executed even though you have
+    control over the instruction pointer.}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Reversing (finding the bug)}
+
+  It \emph{is} possible to exploit a program without a clue of how it works
+  (someone\texttrademark\ should hold a lecture on fuzzing) but we will try to
+  be a bit more ninja about it.\\[1em]
+
+  At DEFCON CTF you don't get the source code for the executables. So the only
+  way to know how the program works is to reverse it.\\[1em]
+
+  Here at Pwnies we will use IDA Pro. IDA Pro is a Windows program, but it runs
+  OK under wine. And it ships with a Linux debugger.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Focus}
+
+  Today we will focus on
+  \begin{itemize}
+  \item Intel X86 32 bits architecture
+  \item ELF executables.
+  \item X86 assembler (Intel syntax).
+  \item Linux.
+  \end{itemize}
+
+  This is a good starting point mainly because of the good documentation.
+\end{frame}
+
+\begin{frame}
+  \frametitle{(Almost) general purpose registers}
+
+  See ``The Art of Picking Intel Registers'' (\cite{swanson2003}).
+
+  \begin{enumerate}
+  \item[EAX] Accumulator. Results.
+  \item[EBX] Base register (data pointer). General purpose.
+  \item[ECX] Loop counter.
+  \item[EDX] Data register, I/O pointer. 64-bit extension of EAX.
+  \item[ESI] Source register.
+  \item[EDI] Destination register.
+  \item[EBP] Base pointer.
+  \item[ESP] Stack pointer.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Register addressing}
+
+  Example: EAX is 32 bits, AX is the lower 16 bits of EAX, AH is the upper 8
+  bits of AX and AL is the lower 8 bits of AX.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Other registers}
+
+  \begin{enumerate}
+  \item[EIP] Instruction pointer. Can't be controlled directly.
+  \item[Eflags] Indicate events. For example ZF (zero flag), SF (sign
+    flag) and CF (carry flag). See ``Intel Architecture Software Developer's
+    Manual, Volume 1'' (\cite{intel1999-vol1}).
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Segment registers}
+
+  There are six: CS, DS, SS, ES, FS and GS.\\[1em]
+
+  Addresses are 48 bits: a 16 bit segment selector and a 32 bit offset. In
+  reality segmentation is practically disabled. Code is data and data is code,
+  pointers are 32 bits.\\[1em]
+
+  Segment FS is an exception, it might change from thread to thread.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Types}
+
+  \begin{itemize}
+  \item Byte: 8 bits.
+  \item Word: 2 bytes, 16 bits.
+  \item Doubleword (or dword): 2 words, 32 bits.
+  \item Quadword (or qword): 2 dwords, 64 bits.
+  \item Doublequadword: 2 qwords, 128 bits.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Tools}
+
+  \begin{description}
+  \item[IDA Pro] The tool, hands down. We will use IDA Pro from day 0, so if you
+    don't have it installed already: Get it! Week 3 will focus on using IDA Pro.
+  \item[objdump and gdb] OK tools if you just need something lightweight. Good
+    for working over ssh, for example.
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Intel X86 assembler}
+
+  \begin{itemize}
+  \item Get a copy of ``Intel Architecture Software Developer's Manual, Volume
+    2: Instruction Set Reference'' (\cite{intel1999-vol2}).
+  \item gdb uses AT\&T syntax, we use Intel syntax.
+  \item Little endian (least significant byte has lowest address).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Some OP codes}
+
+  \only<+>{
+    \begin{description}
+    \item[PUSH src] Pushes it's operand onto the stack. Decreases ESP according to the
+      operand. If ESP itself is pushed, it is the value of ESP \emph{before} the
+      operation that gets pushed.
+    \item[POP dst] Pops a value from the stack and stores it in the operand. Increases
+      ESP accordingly.
+    \item[MOV dst, src] Moves the value of src to dst. The source operand can be
+      a value, a register or a memory location (using the [reg1 + reg2 * imm1 +
+      imm2] notation). The destination can be a register or a memory location.
+    \item[ADD dst, src] Adds src and dst and stores the result in dst.
+    \item[SUB dst, src] You guessed it.
+    \end{description}
+  }
+
+  \only<+>{
+    \begin{description}
+    \item[CMP op1, op2] Compares op1 to op2 by subtracting op2 from op1, and sets
+      CF, OF, SF, ZF, AF and PF in Eflags accordingly. Normally used in
+      conjunction with jump instructions.
+    \item[JZ, JNZ, JL, JLE, JG, JGE] Jump according to Eflags. If Eflags was set
+      by CMP op1 op2, then the OP codes mean jump if op1 is equal to, not equal
+      to, less than, less than or equal to, greater than or greater than or equal
+      to op2 respectively. There are many other OP codes in the Jcc family.
+    \item[JMP dst] Jump to dst (register, memory, offset or absolute address).
+    \item[CALL dst] Push the address of the following OP code on the stack and
+      jump to dst.
+    \item[RET] Pop the return address and jump to it.
+    \end{description}
+  }
+
+  \only<+>{
+    Look these up yourself:
+    \begin{list}{}
+    \item LEA, PUSHA, POPA, PUSHF, POPF, CDQ, AND, OR, NOT, XOR, BSF, BSR,
+      BSWAP, XCHG, MUL, DIV, NEG, NOP, INC, DEC, ENTER, LEAVE, LOOP, STOS, ROL,
+      ROR, SHL, SHR, XADD, XLAT, and many more...
+    \end{list}
+  }
+  \end{frame}
+
+\begin{frame}
+  \frametitle{ELF and virtual memory}
+
+  ELF is a format for storing executables, object files and shared
+  libraries.\\[1em]
+
+  The ELF file describes how the memory should be laid out (what goes where),
+  and how linking is to be done.\\[1em]
+
+  Our programs run in virtual memory meaning that every program ``thinks'' that
+  is has its own (rather large) chunk of memory. Direct memory references is possible.
+\end{frame}
+
+\begin{frame}
+  \frametitle{The stack}
+
+  The stack grows down from higher addresses to lower addresses.\\[1em]
+
+  The top of the stack is pointed to by ESP. To allocate space on the stack
+  \emph{subtract} from ESP, and to free space on the stack \emph{add} to
+  it.\\[1em]
+
+  Remember ESP points to the last value pushed.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Function calls}
+
+  Refer to \cite{erickson2008} for details.\\[1em]
+
+  The way a function call is done is the caller first pushes the arguments
+  (right to left) and the return address onto the stack. Then the callee pushes
+  EBP onto the stack and stores ESP in EBP. Local variables are allocated on the
+  stack by subtracting from ESP.
+
+  After the function has executed ESP and EBP is brought back to normal.\\[1em]
+
+  Try and write a very small program and reverse it to see how it all works!
+\end{frame}
+
+\begin{frame}
+  \frametitle{The heap}
+
+  The heap is used for dynamically allocated memory. The heap is managed by a
+  memory allocator. There are many implementations. Later today we will learn
+  how to exploit Doug Lee's allocator (usually just called dlmalloc).
+\end{frame}
+
+\begin{frame}
+  \frametitle{System calls}
+
+  The program communicate with the operating system by system calls. System
+  calls on Linux are particularly simple.\\[1em]
+
+  EAX holds the system call number, and EBX, ECX, EDX, ESI, EDI and EBP hold the
+  arguments. When the registers are set up right interrupt 0x80 executes the
+  system call. The OP code is INT 0x80.\\[1em]
+
+  See manpage syscalls(2).
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Examples}
+
+\tiny
+\begin{figure}
+\begin{multicols}{2}
+If-statement
+\begin{verbatim}
+080483e4 <main>:
+ 80483e4: push   ebp
+ 80483e5: mov    ebp,esp
+ 80483e7: and    esp,0xfffffff0
+ 80483ea: sub    esp,0x10
+ 80483ed: cmp    DWORD [ebp+0x8],0x1
+ 80483f1: jg     80483ff <main+0x1b>
+ 80483f3: mov    DWORD [esp], 0x80484d0
+ 80483fa: call   8048318 <puts@plt>
+ 80483ff: mov    eax,0x0
+ 8048404: leave
+ 8048405: ret
+
+
+
+
+
+
+
+
+\end{verbatim}
+Loop
+\begin{verbatim}
+080483b4 <main>:
+ 80483b4:	push   ebp
+ 80483b5:	mov    ebp,esp
+ 80483b7:	sub    esp,0x70
+ 80483ba:	mov    DWORD [ebp-0x4],0x0
+ 80483c1:	jmp    80483df <main+0x2b>
+ 80483c3:	mov    eax,[ebp-0x4]
+ 80483c6:	mov    edx,[ebp+0xc]
+ 80483c9:	add    edx,0x4
+ 80483cc:	mov    ecx,[edx]
+ 80483ce:	mov    edx,[ebp-0x4]
+ 80483d1:	lea    edx,[ecx+edx]
+ 80483d4:	movzx  BYTE edx,[edx]
+ 80483d7:	mov    [ebp+eax-0x68],dl
+ 80483db:	add    DWORD [ebp-0x4],0x1
+ 80483df:	cmp    DWORD [ebp-0x4],0x63
+ 80483e3:	jle    80483c3 <main+0xf>
+ 80483e5:	mov    eax,0x0
+ 80483ea:	leave
+ 80483eb:	ret
+\end{verbatim}
+\end{multicols}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Relative jumps}
+
+  What does these OP codes do?
+
+\begin{verbatim}
+deadbeef: eb 00    jmp 0x0
+deadbef1: eb fe    jmp -0x2
+\end{verbatim}
+
+  What about this one?
+\begin{verbatim}
+decafbad: e8 ff ff ff ff   call -0x1
+decafbb3: c0 58            [jiberish]
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Gcc stack protector}
+
+  (AT\&T syntax for the heck of it)
+\tiny
+\begin{verbatim}
+08048404 <main>:
+ 8048404:	55                   	push   %ebp
+ 8048405:	89 e5                	mov    %esp,%ebp
+ 8048407:	83 e4 f0             	and    $0xfffffff0,%esp
+ 804840a:	83 c4 80             	add    $0xffffff80,%esp
+ 804840d:	8b 45 0c             	mov    0xc(%ebp),%eax
+ 8048410:	89 44 24 0c          	mov    %eax,0xc(%esp)
+ 8048414:	65 a1 14 00 00 00    	mov    %gs:0x14,%eax
+ 804841a:	89 44 24 7c          	mov    %eax,0x7c(%esp)
+ 804841e:	31 c0                	xor    %eax,%eax
+ 8048420:	c7 44 24 14 00 00 00 	movl   $0x0,0x14(%esp)
+ ...
+ 8048456:	8b 54 24 7c          	mov    0x7c(%esp),%edx
+ 804845a:	65 33 15 14 00 00 00 	xor    %gs:0x14,%edx
+ 8048461:	74 05                	je     8048468 <main+0x64>
+ 8048463:	e8 d8 fe ff ff       	call   8048340 <__stack_chk_fail@plt>
+ 8048468:	c9                   	leave
+ 8048469:	c3                   	ret
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Nasty stuff}
+
+  \begin{itemize}
+  \item It is possible to detect the presence of ptrace (used by gdb). See ``A
+    Little Journey to the Wonderful World of ptrace.'' (\cite{ptrace-journey}).
+  \item Jumps to the middle of instructions. Ex: MOV eax,0xd4ff1234 has OP code
+    b8 34 12 ff d4. The OP code of CALL esp is ff d4 which we find three bytes
+    in.
+  \item There's nothing natural about the way gcc (and other compilers) builds
+    an ELF file. It is possible to produce a statically linked and stripped
+    executable. That means (almost) no symbols and sections, just a big chunk of
+    code.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Shellcode}
+
+  A shellcode is a small piece of machine code. It is typically designed to give
+  the attacker a shell, which she can use to access the host.\\[1em]
+
+  A shellcode is \emph{not} an executable. You operating system will not be able
+  to run it as-is. Use the program ``demo'' (download from the website) to test your
+  shellcode.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{A typical shellcode is}
+
+  \begin{itemize}
+  \item Tiny - often less than 100 bytes.
+  \item NUL byte free (in a C string a NUL byte means the end of the string).
+  \item Position independent (most of the time you don't know where your
+    shellcode ends up, and when you do its program specific).
+  \item Relies as little as possible on its environment (memory layout, memory
+    position, etc.).
+  \end{itemize}
+
+  Sometimes a host will reject certain input. For example non-printable
+  characters. It is possible to write shellcode using only printable
+  characters. The Internet is filled with coders/decoders.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kinds of shellcode}
+
+  See Wikipedia (\cite{wiki-shellcode}). And for some really leet stuff see
+  ``English Shellcode'' (\cite{mason2009}).
+
+  \begin{itemize}
+  \item Local (just run execve(/bin/sh)).
+  \item Remote.
+    \begin{itemize}
+    \item Bindshell (attacker connects).
+    \item Connect-back (shellcode connects).
+    \end{itemize}
+  \item Staged. A small shellcode locates (and/or assembles) the real
+    shellcode. An egg-hunter searches memory for the shellcode. Sometimes
+    the shellcode's position can be calculated from pointers in known locations.
+  \item Downloader.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Architecture}
+
+  As mentioned we focus on Intel X86 32 bits processors. Officially it's called
+  IA32 (\cite{wiki-ia32}), but is also referred to as X86 or i386.\\[1em]
+
+  The AMD64 architecture is referred to as X86-64, IA32e, EM64T or X64. It is
+  \emph{not} the same as IA64 (used in Intel Itanium).
+\end{frame}
+
+\begin{frame}
+  \frametitle{Position independent shellcode}
+
+  Often we don't know where the shellcode is located.\\[1em]
+
+  We have two options:
+  \begin{itemize}
+  \item Find the absolute address.
+  \item Not rely on knowing the address.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Finding the address}
+
+  This would be great:
+\begin{verbatim}
+bedab055: mov eax,eip
+...
+bedab100: add eax,0x1ab
+...
+bedab200: [DATA]
+\end{verbatim}
+
+  But there is not such an instruction in X86.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Trampoline}
+
+\begin{verbatim}
+da7aba5e: eb 5e             jmp 0x5e
+...
+da7aba71: 58                pop eax
+...
+da7ababe: e8 9d ff ff ff    call -0x63
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{The NOP sled}
+
+  If we don't know the exact address of the shellcode but have an idea of where
+  it is we can use a NOP sled.
+
+\begin{verbatim}
+90   NOP
+90   NOP
+90   NOP
+90   NOP
+...
+90   NOP
+90   NOP
+     [shellcode]
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Pushing a string on the stack}
+
+  If we need a string and we don't know where the shellcode is loaded, we can
+  store the string in a known location. The stack is a good option.
+
+\begin{verbatim}
+bedabb1e: 68 73 73 77 64    push "sswd"
+bedabb23: 68 63 2f 70 61    push "c/pa"
+bedabb28: 68 0a 2f 65 74    push (0xa | ("/et" << 8))
+bedabb2d: 68 6f 72 6c 64    push "orld"
+bedabb32: 68 6f 2c 20 57    push "o, W"
+bedabb37: 68 48 65 6c 6c    push "Hell"
+bedabb3c: 89 e0             mov eax,esp
+\end{verbatim}
+
+  Register EAX points to the string ``Hello, World\textbackslash n/etc/passwd''.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Controlling registers}
+
+  \tiny
+  \begin{multicols}{2}
+    Setting EAX to zero
+\begin{verbatim}
+5a11b0a7: b8 00 00 00 00    mov eax,0x0
+
+600dbea7: 31 c0             xor eax,eax
+
+7bea71e5: 29 c0             sub eax,eax
+
+da7aba5e: b8 ff ff ff ff    mov eax,-0x1
+da7aba63: 40                inc eax
+
+badbaded: 89 d8             mov eax,ebx
+badbadef: 31 d8             xor eax,ebx
+\end{verbatim}
+    Setting EDX to zero if EAX is non-negative
+\begin{verbatim}
+601dc0de: 99                cdq
+\end{verbatim}
+    Setting EAX, ECX and EDX to zero
+\begin{verbatim}
+be5770ad: 31 c9             xor ecx,ecx
+be5770af: f7 e9             imul
+(ECX := 0, EDX:EAX := EAX * ECX)
+
+
+
+
+\end{verbatim}
+    Setting EAX to an arbitrary value
+\begin{verbatim}
+17570a57: b8 33 22 11 00    mov eax,0x00112233
+
+fa57c0de: b8 32 23 10 01    mov eax,0x01102332
+fa57c0e3: 35 01 01 01 01    xor eax,0x01010101
+
+c01dca75: b8 03 32 21 10    mov eax,0x01122330
+c01dca7a: c1 c8 04          ror eax,0x4
+
+deadca75: b8 cc dd ee ff    mov eax,0xffeeddcc
+deadca7a: f7 d0             not eax
+\end{verbatim}
+    Setting a register to a value less than 128
+\begin{verbatim}
+1116e718: 6a 17             push byte 0x17
+1116e718: 58                pop eax
+\end{verbatim}
+    Zero if even
+\begin{verbatim}
+        : c1 e0 1f          shl eax,31
+\end{verbatim}
+    Zero if positive
+\begin{verbatim}
+        : c1 e8 1f          shr eax,31
+
+        : c1 f8 1f          sar eax,31
+\end{verbatim}
+  \end{multicols}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stack buffer overflow exploits}
+
+  Read ``Smashing the Stack for Fun and Profit'' (\cite{alephone1996}).\\[1em]
+
+  Local variables are allocated on the stack. In the typical example a buffer is
+  overflowed in order to overwrite the return address.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Inside a function}
+
+{\tiny
+\begin{verbatim}
+int myfun (int a, int b, inc) {
+  int x, y;
+  ...
+\end{verbatim}
+\begin{verbatim}
+cc cc cc cc    [ebp - 0x10] : third argument
+bb bb bb bb    [ebp - 0xc]  : second argument
+aa aa aa aa    [ebp - 0x8]  : first argument
+dd cc bb aa                 : return address (0xaabbccdd)
+88 77 ff bf                 : saved base pointer (0xbfff7788)
+xx xx xx xx    [ebp + 0x4]  : first local variable
+yy yy yy yy    [ebp + 0x8]  : second local variable
+\end{verbatim}
+}
+Look out for strcpy and friends, and loops controlled by input.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sweet!}
+
+  {\small
+    \texttt{gdb --args ./stack `perl -e 'print "A"x1030'`}\\
+    \texttt{(gdb) run}
+  }\\[1em]
+
+  (A good sign that you're controlling EIP)\\[1em]
+
+  {\small
+    \texttt{Program received signal SIGSEGV, Segmentation fault.}\\
+    \texttt{0x41414141 in ?? ()}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{Now what?}
+
+  So we control EIP, now what?\\[1em]
+
+  If the stack is not randomised we can use a NOP sled and return
+  directly.\\[1em]
+
+  Nowadays -- unfortunately -- the stack randomised. We don't know where it's
+  located.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Return to library}
+
+  If we now the address of a library we can return to it, (mis)using OP
+  codes. Jump and call instructions can be useful. Especially JMP esp and CALL
+  esp.\\[1em]
+
+  If you can't find the code you need, you can sometimes build it from several
+  places in the library. Example (EDX holds the address of the shellcode):
+
+\tiny
+  \begin{multicols}{2}
+\begin{verbatim}
+08048526:   89 d0   mov eax,edx
+08048528:   5e      pop esi
+08048529:   c3      ret
+...
+080486d7:   ff d0   call eax
+\end{verbatim}
+\begin{verbatim}
+...
+d7 86 04 08
+41 41 41 41
+26 85 04 08  < ESP
+\end{verbatim}
+  \end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Jump to EAX}
+
+\tiny
+\begin{verbatim}
+ff e0               jmp eax
+
+
+ff d0               call eax
+
+
+50                  push eax
+c3                  ret
+
+
+89 c3               mov ebx,eax
+...
+ff d3               call ebx
+
+
+60                  pusha
+...
+81 ec 1c 00 00 00   sub esp,0x1c
+...
+c3                  ret
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Be creative!}
+
+  OP codes are everywhere, and some codes have multiple meanings depending on
+  alignment. Sometimes you will find useful OP codes in text string or
+  icons. Look around.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stack cookies}
+
+  A stack cookie (or a stack canary as it is often called) is a value pushed
+  onto the stack at the beginning of a function call. After the function has
+  executed the value is inspected. If it has changed the program aborts. GCC and
+  Microsoft Visual Studio implements stack cookies since 1997.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Heap buffer overflow exploits (using dlmalloc)}
+
+  See ``A Memory Allocator'' (\cite{lea1996}).
+
+  You will find the source code for Doug Lea's memory allocator in malloc.c in
+  todays exercises.\\[1em]
+
+  Memory allocators must find a balance between speed and resilience to
+  errors. Speedy allocators are good for us.\\[1em]
+
+  A memory allocator must have some internal data structure to keep track of
+  allocated memory. If we can tamper with this data structure we might be able
+  to get the allocator to help us.\\[1em]
+
+  I will not give a recipe for exploiting dlmalloc. Look at the source code,
+  it's nicely documented.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Writing exploits}
+
+  Write self-documenting maintainable code.
+
+\tiny
+\begin{verbatim}
+#include <stdint.h>
+...
+
+unsigned char shellcode[] = {0x6A, 0x0E, 0x5A, ...};
+struct {
+  unsigned char buf[64];
+  uint32_t ebp;
+  uint32_t ret0;
+  uint32_t esi;
+  uint32_t ret1;
+  char nul;
+} __attribute__((packed)) overflow;
+
+memset(&overflow, 'A', sizeof(overflow));
+memcpy(overflow.buf, shellcode, sizeof(shellcode));
+overflow.ret0 = 0x08048526;
+overflow.ret1 = 0x080486D7;
+overflow.nul = '\0';
+...
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Other stuff}
+
+  See \cite{erickson2008, koziol2004}.
+
+  \begin{itemize}
+  \item Format string exploits.
+  \item Returning into libc (and libc chaining).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Commands}
+
+  \begin{description}
+  \item[objdump -d] Disassemble.
+  \item[objdump -D] Disassemble all.
+  \item[objdump -h] List section header.
+  \item[nasm -f elf] Assemble ELF object file.
+  \item[gcc -m32 -fno-stack-protector] Compile to X86 32 bits without stack
+    protection.
+  \item[grep "`perl -e 'print \textbackslash "\textbackslash xff\textbackslash
+    xd4\textbackslash "'`" $\lbrack$ file $\rbrack$]
+    Look for CALL esp in file.
+  \item[...]
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Proactive Computer Security}
+
+  Block 4, 2011.\\[1em]
+
+  Look it up on Absalon. Lots of useful slides and links.
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Bibliography}
+  \tiny
+  \bibliographystyle{../../literature/bibliography/theseurl}
+  \bibliography{../../literature/bibliography/bibliography}
+\end{frame}
+
+\end{document}
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
