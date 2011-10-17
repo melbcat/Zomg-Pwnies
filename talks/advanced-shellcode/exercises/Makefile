@@ -1,13 +1,13 @@
+GCC=gcc -m32 -O0 -z execstack -fno-stack-protector -fno-builtin
 
 all: demo server hello-trampoline huge-shellcode connect-back bindshell \
   egg-hunter
 
 demo:
-	gcc demo.c -o demo -z execstack
+	$(GCC) demo.c -o demo
 
 server:
-	gcc server.c -o server -z execstack -O0 -fno-stack-protector \
-  -fno-builtin-memset
+	$(GCC) server.c -o server
 
 hello-trampoline:
 	nasm -I linux/ hello-trampoline.asm

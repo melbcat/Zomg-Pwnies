@@ -13,16 +13,15 @@ const char *REPLY   = "Is this your best?:\n";
 char global_client_buffer[4096];
 
 void read_from_client (int sock) {
-  char buf[200], c, stop = '\n';
-  int i = 0;
+  char buf[200], c;
+  char *cur = buf;
   memset(buf, 0, sizeof(buf));
-  write(sock, WELCOME, strlen(WELCOME));
   while (read(sock, &c, 1)) {
-    buf[i++] = c;
-    if (c == stop)
+    *cur++ = c;
+    if (c == '\n')
       break;
   }
-  memcpy(global_client_buffer, buf, strlen(buf));
+  strcpy(global_client_buffer, buf);
 }
 
 void write_to_client (int sock) {
@@ -30,7 +29,12 @@ void write_to_client (int sock) {
   write(sock, global_client_buffer, strlen(global_client_buffer));
 }
 
+void welcome_client (int sock) {
+  write(sock, WELCOME, sizeof(WELCOME));
+}
+
 void handle_client (int sock) {
+  welcome_client(sock);
   read_from_client(sock);
   write_to_client(sock);
   close(sock);
