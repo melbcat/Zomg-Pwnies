@@ -13,15 +13,20 @@ const char REPLY[]   = "Is this your best?:\n";
 char global_client_buffer[4096];
 
 void read_from_client (int sock) {
-  char buf[200], c;
-  char *cur = buf;
-  memset(buf, 0, sizeof(buf));
-  while (read(sock, &c, 1)) {
-    *cur++ = c;
-    if (c == '\n')
+  struct {
+    char c;
+    char *cur;
+    char buf[200];
+  } locals;
+  locals.cur = locals.buf;
+  memset(locals.buf, 0, sizeof(locals.buf));
+  while (read(sock, &locals.c, 1) > 0) {
+    *locals.cur++ = locals.c;
+    /* printf("%c - %d\n", locals.c, (int)(locals.cur - locals.buf)); */
+    if (locals.c == '\n')
       break;
   }
-  strcpy(global_client_buffer, buf);
+  strcpy(global_client_buffer, locals.buf);
 }
 
 void write_to_client (int sock) {
