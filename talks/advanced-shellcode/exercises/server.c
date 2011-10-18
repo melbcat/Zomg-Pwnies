@@ -7,8 +7,8 @@
 #include<sys/socket.h>
 #include<netinet/in.h>
 
-const char *WELCOME = "You output to my input? Do your best!\n";
-const char *REPLY   = "Is this your best?:\n";
+const char WELCOME[] = "You output to my input? Do your best!\n";
+const char REPLY[]   = "Is this your best?:\n";
 
 char global_client_buffer[4096];
 
@@ -25,12 +25,12 @@ void read_from_client (int sock) {
 }
 
 void write_to_client (int sock) {
-  write(sock, REPLY, strlen(REPLY));
+  write(sock, REPLY, sizeof(REPLY) - 1);
   write(sock, global_client_buffer, strlen(global_client_buffer));
 }
 
 void welcome_client (int sock) {
-  write(sock, WELCOME, sizeof(WELCOME));
+  write(sock, WELCOME, sizeof(WELCOME) - 1);
 }
 
 void handle_client (int sock) {
