@@ -7,7 +7,7 @@
 #include<sys/socket.h>
 #include<netinet/in.h>
 
-const char WELCOME[] = "You output to my input? Do your best!\n";
+const char WELCOME[] = "Your output to my input? Do your best!\n";
 const char REPLY[]   = "Is this your best?:\n";
 
 char global_client_buffer[4096];
@@ -22,7 +22,6 @@ void read_from_client (int sock) {
   memset(locals.buf, 0, sizeof(locals.buf));
   while (read(sock, &locals.c, 1) > 0) {
     *locals.cur++ = locals.c;
-    /* printf("%c - %d\n", locals.c, (int)(locals.cur - locals.buf)); */
     if (locals.c == '\n')
       break;
   }
